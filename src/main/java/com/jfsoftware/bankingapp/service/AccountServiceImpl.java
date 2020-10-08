@@ -73,6 +73,6 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> (new AccountNotFoundException(accountNumber)));
 
         return new AccountStatement(account.getCurrentBalance(), transactionRepository
-                .findByAccountNumberEquals(accountNumber));
+                .findByAccountNumber(accountNumber));
     }
 }
