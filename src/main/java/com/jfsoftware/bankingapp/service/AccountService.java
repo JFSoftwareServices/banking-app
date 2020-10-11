@@ -1,7 +1,7 @@
 package com.jfsoftware.bankingapp.service;
 
-import com.jfsoftware.bankingapp.controller.request.TransferBalanceRequest;
-import com.jfsoftware.bankingapp.dto.AccountStatement;
+import com.jfsoftware.bankingapp.dto.request.RequestTransferBalanceDTO;
+import com.jfsoftware.bankingapp.dto.response.ResponseStatementDTO;
 import com.jfsoftware.bankingapp.entity.Account;
 import com.jfsoftware.bankingapp.entity.Transaction;
 import org.springframework.data.jpa.repository.Lock;
@@ -23,8 +23,8 @@ public interface AccountService {
     Account findByAccountNumber(String accountNumber);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Transaction sendMoney(TransferBalanceRequest transferBalanceRequest);
+    Transaction sendMoney(RequestTransferBalanceDTO transferBalanceRequest);
 
     @Lock(LockModeType.PESSIMISTIC_READ)
-    AccountStatement getStatement(String accountNumber);
+    ResponseStatementDTO getStatement(String accountNumber);
 }

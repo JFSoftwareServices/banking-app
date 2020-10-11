@@ -1,4 +1,4 @@
-package com.jfsoftware.bankingapp.controller.request;
+package com.jfsoftware.bankingapp.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,13 +12,13 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransferBalanceRequest {
-    @NotEmpty(message = "accountNumber cannot be missing or empty")
-    @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
+public class RequestTransferBalanceDTO {
+    @NotEmpty(message = "fromAccountNumber cannot be missing or empty")
+    @Size(min = 7, max = 7, message = "fromAccountNumber must be 7 characters")
     private String fromAccountNumber;
 
-    @NotEmpty(message = "accountNumber cannot be missing or empty")
-    @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
+    @NotEmpty(message = "toAccountNumber cannot be missing or empty")
+    @Size(min = 7, max = 7, message = "toAccountNumber must be 7 characters")
     private String toAccountNumber;
 
     @NotNull(message = "amount cannot be missing or empty")

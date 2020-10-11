@@ -1,18 +1,21 @@
 package com.jfsoftware.bankingapp.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @ToString
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "transactions"})
 @Entity
 @Table(name = "account")
 public class Account implements Serializable {
@@ -20,16 +23,27 @@ public class Account implements Serializable {
 
     @Id
     @GeneratedValue
+    @Setter(value = AccessLevel.NONE)
     private Long accountId;
 
     @Column(unique = true, nullable = false)
-    @NotEmpty(message = "accountNumber cannot be missing or empty")
-    @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
     private String accountNumber;
 
-    @NotNull(message = "currentBalance cannot be missing or empty")
-    @DecimalMin(value = "0.0", message = "currentBalance cannot be negative")
-    @Digits(integer = 10, fraction = 2, message = "currentBalance integral digits cannot be greater than 10 and " +
-            "factional digits greater than 2")
+    @Column(nullable = false)
     private BigDecimal currentBalance;
+
+    @ManyToMany(mappedBy = "accounts", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    public void addTransaction(Transaction transaction) {
+        transactions.add(transaction);
+    }
+
+    public void debit(BigDecimal amount) {
+        currentBalance = currentBalance.subtract(amount);
+    }
+
+    public void credit(BigDecimal amount) {
+        currentBalance = currentBalance.add(amount);
+    }
 }

@@ -2,20 +2,21 @@ package com.jfsoftware.bankingapp.entity;
 
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Data
-@Entity
 @Builder
+@Entity
 @Table(name = "transaction")
 public class Transaction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -24,17 +25,30 @@ public class Transaction implements Serializable {
     @GeneratedValue
     private Long transactionId;
 
-    @NotEmpty(message = "accountNumber cannot be missing or empty")
-    @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
     @Column(nullable = false)
-    private String accountNumber;
+    private String fromAccountNumber;
 
-    @NotNull(message = "transactionAmount cannot be missing or empty")
-    @DecimalMin(value = "0.0", message = "transactionAmount cannot be negative")
-    @Digits(integer = 10, fraction = 2, message = "transactionAmount integral digits cannot be greater than 10 and " +
-            "factional digits greater than 2")
+    @Column(nullable = false)
+    private String toAccountNumber;
+
     private BigDecimal transactionAmount;
 
-    @CreatedDate
-    private LocalDateTime transactionDateTime = LocalDateTime.now();
+    @ManyToMany()
+    @JoinTable(name = "TRANSACTION_ACCOUNT",
+            joinColumns = @JoinColumn(name = "TRANSACTION_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ACCOUNT_ID"))
+    private List<Account> accounts = new ArrayList<>();
+
+    public Transaction(String fromAccountNumber, String toAccountNumber, BigDecimal amount) {
+        this.fromAccountNumber = fromAccountNumber;
+        this.toAccountNumber = toAccountNumber;
+        this.transactionAmount = amount;
+    }
+
+    public void addAccount(Account account) {
+        accounts.add(account);
+    }
+
+    @CreationTimestamp
+    private LocalDateTime transactionDateTime;
 }

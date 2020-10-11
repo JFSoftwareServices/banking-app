@@ -1,28 +1,29 @@
 package com.jfsoftware.bankingapp.service;
 
-import com.jfsoftware.bankingapp.controller.request.TransferBalanceRequest;
-import com.jfsoftware.bankingapp.dto.AccountStatement;
+import com.jfsoftware.bankingapp.dto.request.RequestTransferBalanceDTO;
+import com.jfsoftware.bankingapp.dto.response.ResponseStatementDTO;
+import com.jfsoftware.bankingapp.dto.response.ResponseTransactionDTO;
 import com.jfsoftware.bankingapp.entity.Account;
 import com.jfsoftware.bankingapp.entity.Transaction;
 import com.jfsoftware.bankingapp.repository.AccountRepository;
 import com.jfsoftware.bankingapp.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
+    @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
     private TransactionRepository transactionRepository;
 
-    public AccountServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-        this.accountRepository = accountRepository;
-        this.transactionRepository = transactionRepository;
-    }
+    @Autowired
+    private EntityDTOMapService entityDTOMapService;
 
     public Account create(Account account) {
         accountRepository.save(account);
@@ -40,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Transaction sendMoney(TransferBalanceRequest transferBalanceRequest) {
+    public Transaction sendMoney(RequestTransferBalanceDTO transferBalanceRequest) {
         String fromAccountNumber = transferBalanceRequest.getFromAccountNumber();
         String toAccountNumber = transferBalanceRequest.getToAccountNumber();
         BigDecimal amount = transferBalanceRequest.getAmount();
@@ -55,24 +56,31 @@ public class AccountServiceImpl implements AccountService {
             throw new InsufficientFundsException(fromAccount);
         }
 
-        fromAccount.setCurrentBalance(fromAccount.getCurrentBalance().subtract(amount));
+        Transaction transaction = new Transaction(fromAccountNumber, toAccountNumber, amount);
+        fromAccount.debit(amount);
+        toAccount.credit(amount);
+
         accountRepository.save(fromAccount);
-        toAccount.setCurrentBalance(toAccount.getCurrentBalance().add(amount));
         accountRepository.save(toAccount);
 
-        return transactionRepository.save(Transaction.builder()
-                .transactionId(0L)
-                .accountNumber(fromAccountNumber)
-                .transactionAmount(amount)
-                .transactionDateTime(LocalDateTime.now()).build());
+        fromAccount.addTransaction(transaction);
+        transaction.addAccount(fromAccount);
+        toAccount.addTransaction(transaction);
+        transaction.addAccount(toAccount);
+
+        return transactionRepository.save(transaction);
     }
 
     @Override
-    public AccountStatement getStatement(String accountNumber) {
+    public ResponseStatementDTO getStatement(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> (new AccountNotFoundException(accountNumber)));
 
-        return new AccountStatement(account.getCurrentBalance(), transactionRepository
-                .findByAccountNumber(accountNumber));
+        List<ResponseTransactionDTO> responseTransactionDTOS = entityDTOMapService
+                .mapList(account.getTransactions(), ResponseTransactionDTO.class);
+
+        return ResponseStatementDTO.builder()
+                .currentBalance(account.getCurrentBalance())
+                .transactionHistory(responseTransactionDTOS).build();
     }
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -14,17 +14,17 @@ class ApiError {
     private String message;
     private List<String> errors;
 
-    ApiError(final HttpStatus status, final String message, final List<String> errors) {
+    ApiError(HttpStatus status, String message, List<String> errors) {
         super();
         this.status = status;
         this.message = message;
         this.errors = errors;
     }
 
-    ApiError(final HttpStatus status, final String message, final String error) {
+    ApiError(final HttpStatus status, String message, String error) {
         super();
         this.status = status;
         this.message = message;
-        errors = Arrays.asList(error);
+        errors = Collections.singletonList(error);
     }
 }

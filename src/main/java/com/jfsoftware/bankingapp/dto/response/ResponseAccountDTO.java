@@ -1,6 +1,5 @@
-package com.jfsoftware.bankingapp.dto;
+package com.jfsoftware.bankingapp.dto.response;
 
-import com.jfsoftware.bankingapp.entity.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AccountStatement implements Serializable {
+
+public class ResponseAccountDTO implements Serializable {
     private static final long serialVersionUID = 1L;
-    BigDecimal currentBalance;
-    List<Transaction> transactionHistory;
+    private String accountNumber;
+    private BigDecimal currentBalance;
+    private List<ResponseTransactionDTO> transactions;
 }
