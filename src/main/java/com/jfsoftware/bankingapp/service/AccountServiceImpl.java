@@ -23,7 +23,7 @@ public class AccountServiceImpl implements AccountService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private EntityDTOMapService entityDTOMapService;
+    private ModelMapperService modelMapperService;
 
     public Account create(Account account) {
         accountRepository.save(account);
@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> (new AccountNotFoundException(accountNumber)));
 
-        List<ResponseTransactionDTO> responseTransactionDTOS = entityDTOMapService
+        List<ResponseTransactionDTO> responseTransactionDTOS = modelMapperService
                 .mapList(account.getTransactions(), ResponseTransactionDTO.class);
 
         return ResponseStatementDTO.builder()

@@ -1,17 +1,11 @@
 package com.jfsoftware.bankingapp.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class RequestTransferBalanceDTO {
     @NotEmpty(message = "fromAccountNumber cannot be missing or empty")
     @Size(min = 7, max = 7, message = "fromAccountNumber must be 7 characters")

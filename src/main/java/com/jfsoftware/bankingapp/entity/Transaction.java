@@ -1,7 +1,7 @@
 package com.jfsoftware.bankingapp.entity;
 
-
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -11,11 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @Data
-@Builder
+@NoArgsConstructor
 @Entity
 @Table(name = "transaction")
 public class Transaction implements Serializable {

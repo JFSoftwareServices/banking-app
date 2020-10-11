@@ -7,7 +7,7 @@ import com.jfsoftware.bankingapp.dto.response.ResponseStatementDTO;
 import com.jfsoftware.bankingapp.dto.response.ResponseTransactionDTO;
 import com.jfsoftware.bankingapp.entity.Account;
 import com.jfsoftware.bankingapp.service.AccountService;
-import com.jfsoftware.bankingapp.service.EntityDTOMapService;
+import com.jfsoftware.bankingapp.service.ModelMapperService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +25,14 @@ public class AccountController implements AccountContract {
     private AccountService accountService;
 
     @Autowired
-    private EntityDTOMapService entityDTOMapService;
+    private ModelMapperService modelMapperService;
 
 
     @Override
     public ResponseEntity<ResponseAccountDTO> create(RequestAccountDTO requestAccountDTO) {
         log.info("Creating account {}", requestAccountDTO);
-        Account account = accountService.create(entityDTOMapService.convertToEntity(requestAccountDTO));
-        ResponseAccountDTO accountDTO = entityDTOMapService.convertToDto(accountService.create(account));
+        Account account = accountService.create(modelMapperService.modelMap(requestAccountDTO, Account.class));
+        ResponseAccountDTO accountDTO = modelMapperService.convertAccountToAccountDto(accountService.create(account));
         log.info("Account {} created", account);
         return ResponseEntity.ok(accountDTO);
     }
@@ -44,24 +44,24 @@ public class AccountController implements AccountContract {
                 accountService
                         .findAll()
                         .stream()
-                        .map(a -> entityDTOMapService.convertToDto(a))
+                        .map(a -> modelMapperService.convertAccountToAccountDto(a))
                         .collect(toList());
         log.info("Found all accounts");
         return ResponseEntity.ok(accounts);
     }
 
     @Override
-    public ResponseEntity<ResponseTransactionDTO> sendMoney(RequestTransferBalanceDTO transferBalanceRequest) {
-        log.info("Transferring {} from account {} to account {}", transferBalanceRequest.getAmount(),
-                transferBalanceRequest.getFromAccountNumber(),
-                transferBalanceRequest.getToAccountNumber());
+    public ResponseEntity<ResponseTransactionDTO> sendMoney(RequestTransferBalanceDTO requestTransferBalanceDTO) {
+        log.info("Transferring {} from account {} to account {}", requestTransferBalanceDTO.getAmount(),
+                requestTransferBalanceDTO.getFromAccountNumber(),
+                requestTransferBalanceDTO.getToAccountNumber());
 
-        ResponseTransactionDTO transaction = entityDTOMapService
-                .convertToDto(accountService.sendMoney(transferBalanceRequest));
+        ResponseTransactionDTO transaction = modelMapperService
+                .modelMap(accountService.sendMoney(requestTransferBalanceDTO), ResponseTransactionDTO.class);
 
-        log.info("Successfully transferred {} from account {} to account {}", transferBalanceRequest.getAmount(),
-                transferBalanceRequest.getFromAccountNumber(),
-                transferBalanceRequest.getToAccountNumber());
+        log.info("Successfully transferred {} from account {} to account {}", requestTransferBalanceDTO.getAmount(),
+                requestTransferBalanceDTO.getFromAccountNumber(),
+                requestTransferBalanceDTO.getToAccountNumber());
         return ResponseEntity.ok(transaction);
     }
 
@@ -76,8 +76,8 @@ public class AccountController implements AccountContract {
     @Override
     public ResponseEntity<ResponseAccountDTO> findByAccountNumber(String accountNumber) {
         log.info("Retrieving account {}", accountNumber);
-        ResponseAccountDTO accountDTO = entityDTOMapService
-                .convertToDto(accountService.findByAccountNumber(accountNumber));
+        ResponseAccountDTO accountDTO = modelMapperService
+                .convertAccountToAccountDto(accountService.findByAccountNumber(accountNumber));
         log.info("Retrieved account {}", accountNumber);
         return ResponseEntity.ok(accountDTO);
     }

@@ -1,8 +1,10 @@
 package com.jfsoftware.bankingapp.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,11 +12,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@ToString
 @Data
+@NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "transactions"})
 @Entity
 @Table(name = "account")

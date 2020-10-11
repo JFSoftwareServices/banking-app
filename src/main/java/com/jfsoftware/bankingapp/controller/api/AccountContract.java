@@ -1,7 +1,7 @@
 package com.jfsoftware.bankingapp.controller.api;
 
-import com.jfsoftware.bankingapp.dto.request.RequestTransferBalanceDTO;
 import com.jfsoftware.bankingapp.dto.request.RequestAccountDTO;
+import com.jfsoftware.bankingapp.dto.request.RequestTransferBalanceDTO;
 import com.jfsoftware.bankingapp.dto.response.ResponseAccountDTO;
 import com.jfsoftware.bankingapp.dto.response.ResponseStatementDTO;
 import com.jfsoftware.bankingapp.dto.response.ResponseTransactionDTO;
@@ -33,11 +33,11 @@ public interface AccountContract {
 
     @GetMapping("/statement/{accountNumber}")
     ResponseEntity<ResponseStatementDTO> getStatement(@PathVariable()
-                                                 @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
-                                                         String accountNumber);
+                                                      @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
+                                                              String accountNumber);
 
     @GetMapping("/{accountNumber}")
     ResponseEntity<ResponseAccountDTO> findByAccountNumber(@PathVariable()
-                                                   @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
-                                                           String accountNumber) throws ParseException;
+                                                           @Size(min = 7, max = 7, message = "accountNumber must be 7 characters")
+                                                                   String accountNumber) throws ParseException;
 }
