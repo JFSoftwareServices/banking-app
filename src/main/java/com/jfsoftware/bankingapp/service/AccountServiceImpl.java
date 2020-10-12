@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.jfsoftware.bankingapp.service.ModelMapperService.mapList;
+
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -21,9 +23,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private TransactionRepository transactionRepository;
-
-    @Autowired
-    private ModelMapperService modelMapperService;
 
     public Account create(Account account) {
         accountRepository.save(account);
@@ -76,8 +75,8 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> (new AccountNotFoundException(accountNumber)));
 
-        List<ResponseTransactionDTO> responseTransactionDTOS = modelMapperService
-                .mapList(account.getTransactions(), ResponseTransactionDTO.class);
+        List<ResponseTransactionDTO> responseTransactionDTOS = mapList(account.getTransactions(),
+                ResponseTransactionDTO.class);
 
         return ResponseStatementDTO.builder()
                 .currentBalance(account.getCurrentBalance())
